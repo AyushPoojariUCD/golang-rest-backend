@@ -2,6 +2,7 @@ package models
 
 import (
 	"go-rest-backend/db"
+	"go-rest-backend/utils"
 )
 
 type User struct {
@@ -26,9 +27,15 @@ func (u *User) Save() error {
 
 	defer stmt.Close()
 
+	hashedPassword, err := utils.HashPassword(u.Password)
+
+	if err != nil {
+		return err
+	}
+
 	result, err := stmt.Exec(
 		u.Email,
-		u.Password,
+		hashedPassword,
 	)
 
 	if err != nil {
