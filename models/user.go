@@ -160,11 +160,10 @@ func DeleteUser(id string) error {
 	return err
 }
 
-// Validate Credential
 func (u *User) ValidateCredential() error {
 
 	query := `
-	SELECT password
+	SELECT id, password
 	FROM users
 	WHERE email = ?
 	`
@@ -173,7 +172,7 @@ func (u *User) ValidateCredential() error {
 
 	var retrievedPassword string
 
-	err := row.Scan(&retrievedPassword)
+	err := row.Scan(&u.ID, &retrievedPassword)
 	if err != nil {
 		return err
 	}

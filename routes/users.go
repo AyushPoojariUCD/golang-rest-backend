@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"go-rest-backend/utils"
 	"go-rest-backend/models"
 )
 
@@ -46,12 +47,19 @@ func login(c *gin.Context) {
 
 	err = user.ValidateCredential()
 	if err != nil {
-		c.JSON(401, gin.H{"error": "Invalid email or password"})
+		c.JSON(401, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	token, err := utils.GenerateToken(user.Email, user.ID)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Could not generate token"})
 		return
 	}
 
 	c.JSON(200, gin.H{
 		"message": "Login successful",
+		"token": token,
 	})
 }
 
