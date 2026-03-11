@@ -33,6 +33,28 @@ func signUp(c *gin.Context) {
 	})
 }
 
+// Login User
+func login(c *gin.Context) {
+
+	var user models.User
+
+	err := c.ShouldBindJSON(&user)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = user.ValidateCredential()
+	if err != nil {
+		c.JSON(401, gin.H{"error": "Invalid email or password"})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Login successful",
+	})
+}
+
 // Get all users
 func getUsers(c *gin.Context) {
 
