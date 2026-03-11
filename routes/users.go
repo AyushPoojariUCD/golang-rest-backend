@@ -2,7 +2,6 @@ package routes
 
 import (
 	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"go-rest-backend/utils"
 	"go-rest-backend/models"

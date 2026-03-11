@@ -2,8 +2,13 @@ package routes
 
 import (
 	"net/http"
+	"strings"
+
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
+
 	"go-rest-backend/models"
+	"go-rest-backend/utils"
 )
 
 // Functions => Handlers for each route
@@ -47,10 +52,49 @@ func getEventByID(c *gin.Context) {
 // Create new event
 func createEvent(c *gin.Context) {
 
+	authHeader := c.GetHeader("Authorization")
+
+	if authHeader == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Authorization header missing",
+		})
+		return
+	}
+
+	// Split "Bearer <token>"
+	tokenParts := strings.Split(authHeader, " ")
+
+	if len(tokenParts) != 2 {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Invalid authorization format",
+		})
+		return
+	}
+
+	tokenString := tokenParts[1]
+
+	parsedToken, err := utils.VerifyToken(tokenString)
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Invalid token",
+		})
+		return
+	}
+
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok || !parsedToken.Valid {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Invalid token claims",
+		})
+		return
+	}
+
+	userId := int(claims["userId"].(float64))
+
 	var event models.Event
 
-	err := c.ShouldBindJSON(&event)
-
+	err = c.ShouldBindJSON(&event)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -58,11 +102,9 @@ func createEvent(c *gin.Context) {
 		return
 	}
 
-	// Temporary user assignment
-	event.UserID = 1
+	event.UserID = userId
 
 	err = event.Save()
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Could not create event",

@@ -1,0 +1,10 @@
+POST http://localhost:8080/events
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImF1dGhAZ21haWwuY29tIiwiZXhwIjoxNzczMzUzOTU2LCJ1c2VySWQiOjd9.MNnIGd656GXSq-sEv-HbhQzXaxFZKa5rO7tzDldhvuc
+
+{
+  "title": "Go to Auth Conference",
+  "description": "A conference about Go programming language.",
+  "location": "San Francisco",
+  "date_time": "2026-02-15T10:00:00Z"
+}
