@@ -1,11 +1,12 @@
 package routes
 
-import (	
+import (
 	"github.com/gin-gonic/gin"
 )
 
 // Routes registration : Endpoint definitions
 func RegisterRoutes(server *gin.Engine) {
+
 	// Health check route
 	server.GET("/", healthCheck)
 
@@ -13,14 +14,14 @@ func RegisterRoutes(server *gin.Engine) {
 	server.GET("/events", getEvents)
 	server.GET("/events/:id", getEventByID)
 
-	// Create event route
 	server.POST("/events", createEvent)
-	// Update event route
 	server.PUT("/events/:id", updateEvent)
-	// Delete event route
 	server.DELETE("/events/:id", deleteEvent)
 
-	// Users create route
-	server.POST("/signup",signUp)
+	// Users routes
+	server.GET("/users", getUsers)
+	server.GET("/users/:id", getUserByID)
+	server.POST("/signup", signUp)
+	server.PUT("/users/:id", updateUser)
+	server.DELETE("/users/:id", deleteUser)
 }
-

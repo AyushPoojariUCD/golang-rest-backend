@@ -46,30 +46,40 @@ func (u *User) Save() error {
 	return nil
 }
 
-// Get user by email (Login)
-func GetUserByEmail(email string) (*User, error) {
+// Get users
+func GetAllUsers() ([]User, error) {
 
 	query := `
 	SELECT id, email, password
 	FROM users
-	WHERE email = ?
 	`
 
-	row := db.DB.QueryRow(query, email)
-
-	var user User
-
-	err := row.Scan(
-		&user.ID,
-		&user.Email,
-		&user.Password,
-	)
-
+	rows, err := db.DB.Query(query)
 	if err != nil {
 		return nil, err
 	}
 
-	return &user, nil
+	defer rows.Close()
+
+	var users []User
+
+	for rows.Next() {
+		var user User
+
+		err := rows.Scan(
+			&user.ID,
+			&user.Email,
+			&user.Password,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
 }
 
 // Get user by ID
@@ -96,4 +106,48 @@ func GetUserByID(id string) (*User, error) {
 	}
 
 	return &user, nil
+}
+
+// Update user
+func (u *User) Update() error {
+
+	query := `
+	UPDATE users
+	SET email = ?, password = ?
+	WHERE id = ?
+	`
+
+	stmt, err := db.DB.Prepare(query)
+
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(
+		u.Email,
+		u.Password,
+		u.ID,
+	)
+
+	return err
+}
+
+// Delete user
+func DeleteUser(id string) error {
+
+	query := `DELETE FROM users WHERE id = ?`
+
+	stmt, err := db.DB.Prepare(query)
+
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(id)
+
+	return err
 }
