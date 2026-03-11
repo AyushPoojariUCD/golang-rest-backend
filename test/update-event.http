@@ -1,0 +1,9 @@
+PUT http://localhost:8080/events/1
+Content-Type: application/json
+
+{
+  "title": "Go Conference",
+  "description": "A conference about Go programming language.",
+  "location": "UK",
+  "date_time": "2026-01-15T10:00:00Z"
+}
